@@ -413,7 +413,109 @@ Japanese
 <br />
 
 
+
+
+HOW TO INSTALL 
+
+
+**✅ Here’s the clean, ready-to-paste Markdown** you can add to `README.md` (or create a new section `docs/linux-uv-cpu-install.md` and link it).
+
+```markdown
+## Linux Installation (CPU-only) using uv
+
+This is the **fastest and cleanest** way to install Voice-Pro on Linux (tested March 2026).  
+It uses [`uv`](https://github.com/astral-sh/uv) and creates a perfectly isolated environment.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/AIGoldenfinger/you-voice-pro.git
+cd you-voice-pro
+```
+
+### 2. Install uv (one-time only)
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### 3. Create and activate the environment (Python 3.10.15)
+```bash
+# Install the exact Python version
+uv python install 3.10.15
+
+# Create virtual environment
+uv venv --python 3.10.15
+
+# Activate it
+source .venv/bin/activate
+```
+
+### 4. Prepare dependencies (critical order!)
+```bash
+# Old setuptools (required for legacy packages)
+uv pip install "setuptools<81" wheel packaging --upgrade
+
+# PyTorch CPU (must be installed BEFORE any other packages)
+uv pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+  --index-url https://download.pytorch.org/whl/cpu
+
+# Force compatible NumPy version (fixes pyworld build)
+uv pip install "numpy==1.26.4" --force-reinstall
+
+# Install openai-whisper separately (fixes pkg_resources error)
+uv pip install openai-whisper==20240930 --no-build-isolation
+```
+
+Save and exit (`Ctrl`+`O` → Enter → `Ctrl`+`X`).
+
+### 5. Install the rest of Voice-Pro
+```bash
+uv pip install -r requirements-voice-cpu.txt --no-build-isolation
+```
+
+### 6. Launch Voice-Pro
+```bash
+python start-voice.py
+```
+
+IF ERROR RUN THESE 2:
+sudo apt update && sudo apt install -y patchelf
+patchelf --clear-execstack .venv/lib/python3.10/site-packages/ctranslate2.libs/libctranslate2-d3638643.so.4.4.0
+
+
+
+The Gradio WebUI will open in your browser at `http://127.0.0.1:7860`.
+
+---
+
+```toml
+[tool.uv.extra-build-dependencies]
+"openai-whisper" = ["setuptools<81"]
+```
+
+You can now run future updates with just:
+```bash
+uv pip install -r requirements-voice-cpu.txt
+```
+
+---
+
+**Done!** You now have a clean, reproducible Voice-Pro installation with **Whisper** + **Kokoro-82M** running entirely on CPU.
+```
+
+
+
+
+
+
+
+
+
+
+
+
 ## 💻 System Requirements
+
+
 - **OS:** Windows 10/11 (64-bit), Linux, Mac
 - **GPU:** NVIDIA with CUDA 12.4 (recommended)
 - **VRAM:** 4GB+ (8GB+ preferred)
@@ -470,41 +572,12 @@ git clone https://github.com/abus-aikorea/voice-pro.git
 - If you increase the denoise level, more background sounds will be removed, and only the remaining voice will be used for voice recognition. It does not always guarantee good results.
   
 
-
-## 🚨 Notice
+-------------------------------
+## 🚨 Notice FROM THE DEVELOPER
 - Due to [WeConnect](https://www.wctokyoseoul.com) development work, there will be no Voice-Pro updates for the time being.
 - All Voice-Pro code has been made open source. It is now completely free to use.
 - [WeConnect](https://www.wctokyoseoul.com) is a communication platform for global cultural exchange.
 
-
-
-<br />
-
-
-## ⏳ SaaS Platforms for Subtitling, Translation, and TTS
-
-The following table lists SaaS platforms supporting subtitling, translation, and text-to-speech (TTS/dubbing) functionalities. Costs are calculated for processing a 60-minute Korean video, including subtitle generation, English translation, and English dubbing, based on the latest available pricing data as of April 15, 2025.
-
-| Platform        | Subtitling | Translation | TTS/Dubbing | Cost for 60-min Video (USD, Approx.) | Key Features                                                                 |
-|-----------------|------------|-------------|-------------|-------------------------------------|------------------------------------------------------------------------------|
-| **[Maestra](https://maestra.ai)**     | ✅         | ✅          | ✅          | $23.70                              | 125+ languages, real-time captions, SEO keyword extraction, 15-min free trial. |
-| **[Kapwing](https://www.kapwing.com)**     | ✅         | ✅          | ✅          | $30~$40 (Pro plan, per minute)     | AI subtitles, 100+ language translations, auto lip-sync dubbing, free tier.   |
-| **[VEED.IO](https://www.veed.io)**     | ✅         | ✅          | ❌          | $24~$36 (Pro plan, partial)        | 99.9% accurate subtitles, Instagram-optimized captions, intuitive editor.     |
-| **[HappyScribe](https://happyscribe.com)** | ✅         | ✅          | ✅          | $36~$48 (Pay-as-you-go)            | 120+ languages, professional proofreading, secure, meeting transcription.     |
-| **[Sonix](https://sonix.ai)**       | ✅         | ✅          | ✅          | $30~$40 (Standard plan)            | 54+ languages, 30-min free transcription, YouTube/Zoom integration.           |
-| **[Descript](https://descript.com)**    | ✅         | ✅          | ✅          | $36~$48 (Creator plan)             | Text-based editing, Overdub TTS, filler word removal, 1-hour free transcription. |
-| **[AppTek](https://apptek.ai)**      | ✅         | ✅          | ✅          | Custom pricing (Contact)            | Media-focused, custom models, metadata generation, cloud-based Workbench.     |
-| **[Transkriptor](https://transkriptor.com)**| ✅         | ✅          | ❌          | $12~$18 (Pay-as-you-go)            | 100+ languages, YouTube link transcription, 99% accuracy, simple editor.      |
-
-### Cost Calculation Details
-- **[Maestra](https://maestra.ai/)**: Premium Plan ($158/month, 1200 credits). 60-min video: 60 credits (subtitles) + 60 credits (translation) + 60 credits (dubbing) = 180 credits. Cost = (180/1200) * $158 = $23.70.[](https://maestra.ai/pricing)
-- **[Kapwing](https://www.kapwing.com)**: Pro plan (\~$24/month, limited minutes). Estimated $0.50\~$0.67/min for subtitles+translation+dubbing (based on per-minute pricing trends). 60-min cost: $30\~$40. Exact pricing requires confirmation.
-- **[VEED.IO](https://www.veed.io)**: Pro plan (\~$24/month). Subtitles+translation estimated at $0.40\~$0.60/min. No TTS, so partial processing. 60-min cost: $24\~$36. Confirm at [veed.io](https://veed.io).
-- **[HappyScribe](https://happyscribe.com)**: Pay-as-you-go (\~$0.20/min transcription, $0.20/min translation, $0.20/min dubbing). 60-min cost: $36\~$48 (assuming combined services). Confirm at [happyscribe.com](https://happyscribe.com).
-- **[Sonix](https://sonix.ai)**: Standard plan (\~$10/hour transcription, additional for translation/dubbing). Estimated $0.50\~$0.67/min total. 60-min cost: $30\~$40. Confirm at [sonix.ai](https://sonix.ai).
-- **[Descript](https://descript.com)**: Creator plan (\~$24/month, limited hours). Estimated $0.60\~$0.80/min for subtitles+translation+dubbing. 60-min cost: $36\~$48. Confirm at [descript.com](https://descript.com).
-- **[AppTek](https://apptek.ai)**: Custom pricing for enterprise. No public per-minute rates. Contact [apptek.ai](https://apptek.ai) for quotes.
-- **[Transkriptor](https://transkriptor.com)**: Pay-as-you-go ($0.05\~$0.10/min transcription, similar for translation). No TTS, so partial processing. 60-min cost: $12\~$18. Confirm at [transkriptor.com](https://transkriptor.com).
 
 ### Notes
 - **Cost for 60-min Video**: Costs are approximate and assume processing a 60-minute Korean video for subtitles, English translation, and English dubbing (where available). Platforms without TTS (e.g., VEED.IO, Transkriptor) reflect partial processing costs.
@@ -517,7 +590,7 @@ The following table lists SaaS platforms supporting subtitling, translation, and
 - **Pricing Updates**: Pricing may vary due to plan changes or promotions. Check official websites for the latest details.
 - For contributions or specific use case recommendations, open an issue or submit a pull request in this repository!
 
-<br />
+
 
 ## ☕ Contributions
 
