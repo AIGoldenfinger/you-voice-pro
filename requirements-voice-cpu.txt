@@ -1,3 +1,4 @@
+setuptools
 structlog
 py-cpuinfo==9.0.0
 wget
